@@ -1,0 +1,103 @@
+networks:
+  demo:
+
+services:
+  gallery-app:
+    profiles:
+      - prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DOCKER_ENV: production
+      secrets:
+        - aws_region
+        - aws_access_key_id
+        - aws_secret_access_key
+        - aws_s3_bucket
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+
+  dev-app:
+    profiles: [ dev ]
+    depends_on: 
+      postgres:
+        condition: service_healthy
+    networks: [ demo ]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+      args:
+        DOCKER_ENV: development
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - AWS_REGION=/run/secrets/aws_region
+      - AWS_ACCESS_KEY_ID=/run/secrets/aws_access_key_id
+      - AWS_SECRET_ACCESS_KEY=/run/secrets/aws_secret_access_key
+      - AWS_S3_BUCKET=/run/secrets/aws_s3_bucket
+    secrets:
+      - aws_region
+      - aws_access_key_id
+      - aws_secret_access_key
+      - aws_s3_bucket
+    ports:
+      - "3001:3000"
+    # develop:
+    #   watch: 
+    #     - path: .
+    #       action: rebuild
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: yarn dev
+
+  postgres:
+    image: postgres:16-alpine
+    hostname: postgres
+    container_name: postgres
+    profiles: [ dev ]
+    networks: ['demo']
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - POSTGRES_DB_FILE=/run/secrets/postgres_db
+    secrets:
+      - postgres_user
+      - postgres_password
+      - postgres_db
+    volumes:
+      - postgres_storage:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U $$(cat /run/secrets/postgres_user) -d $$(cat /run/secrets/postgres_db)']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+secrets:
+  aws_region:
+    environment: AWS_REGION
+  aws_access_key_id:
+    environment: AWS_ACCESS_KEY_ID
+  aws_secret_access_key:
+    environment: AWS_SECRET_ACCESS_KEY
+  aws_s3_bucket:
+    environment: AWS_S3_BUCKET
+  postgres_user:
+    environment: POSTGRES_USER
+  postgres_password:
+    environment: POSTGRES_PASSWORD
+  postgres_db:
+    environment: POSTGRES_DB
