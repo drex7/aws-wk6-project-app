@@ -1,0 +1,76 @@
+name: Build & Push Image to Amazon Private ECR , and trigger blue-green deployment
+
+run-name: Run triggered by ${{ github.event_name }} with commit message ${{ github.event.head_commit.message }}
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_TAG: latest
+  ECR_REPOSITORY_NAME: GalleryApp-v2-repo
+  ECR_REPOSITORY_NAME_URI: ${{ vars.ECR_REPOSITORY_NAME_URI }}
+  ECS_TASK_DEFINITION: gallery-app-task-definition
+  CONTAINER_NAME: GalleryAppContainer
+  SERVICE_NAME: gallery-app-task-definition-service
+  CODEDEPLOY_DEPLOYMENT_GROUP: GalleryAppDeploymentGroup
+  CLUSTER_NAME: GalleryAppCluster
+  CODEDEPLOY_APPLICATION: GalleryAppCodeDeployApplication
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      registry: ${{ steps.login-ecr.outputs.registry }}
+      image: ${{ steps.generate-img-name.outputs.image_name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR Private Registry
+        id: login-ecr
+        run: |
+          echo Logging in to Amazon ECR...
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Generate image name
+        id: generate-img-name
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: latest
+        run: |
+          echo "image_name=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}" \
+          >> "$GITHUB_OUTPUT"
+      
+      - name: Build Docker image
+        id: build-and-tag
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # IMAGE_TAG: ${{ vars.IMAGE_TAG }}
+        run: |
+            docker build --secret id=db-url-id,env=DATABASE_URL -t $IMAGE_TAG .
+            echo "IMAGE $IMAGE_TAG is built and tagged"
+  
+      - name: Tag Docker image
+        run: |
+          docker tag $IMAGE_TAG:latest $ECR_REPOSITORY_NAME_URI:$IMAGE_TAG 
+      
+      - name: Push Docker image to Amazon ECR
+        id: push
+        shell: bash
+        run: |
+          docker image push "$ECR_REPOSITORY_NAME_URI:$IMAGE_TAG"
+          echo "IMAGE $IMAGE_TAG is pushed to $ECR_REPOSITORY_NAME_URI"
+          echo "image_tag=$IMAGE_TAG" 
+          echo "full_image=$ECR_REPOSITORY_NAME_URI:$IMAGE_TAG"

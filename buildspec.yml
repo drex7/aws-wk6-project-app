@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  build:
+    commands:
+      - echo Build started
+      - echo Building the Docker image...
+      - docker build -t $ECR_REPOSITORY_URI:latest .
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push $ECR_REPOSITORY_URI:latest
+      - echo Writing task definitions file...
+      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $ECR_REPOSITORY_URI:latest >
+          imagedefinitions.json
+      
+      # - echo Uploading artifacts to S3...
+      # - aws s3 cp task-definition.json s3://$ARTIFACT_BUCKET/artifacts/$IMAGE_NAME/$IMAGE_TAG/imagedefinitions.json
+      # - aws s3 cp appspec.yaml s3://$ARTIFACT_BUCKET/artifacts/$IMAGE_NAME/$IMAGE_TAG/appspec.yaml
+artifacts:
+  base-directory: !Sub build-artifact/$ECR_REPO_NAME-repo/$CODEBUILD_BUILD_NUMBER
+  files:
+    - imagedefinitions.json
+    - appspec.yaml
