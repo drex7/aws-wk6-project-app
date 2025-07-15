@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     awsRegion: process.env.AWS_REGION,
     awsS3Bucket: process.env.AWS_S3_BUCKET,
+    DATABASE_URL: `postgresql://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_ENDPOINT}:5432/${process.env.DB_NAME}?schema=public`,
     nodeEnv: process.env.NODE_ENV || "development",
   },
   compatibilityDate: "2025-06-10",

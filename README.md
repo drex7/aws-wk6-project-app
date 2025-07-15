@@ -1,4 +1,4 @@
-# Fullstack Blog App with NuxtJs (REST API)
+# Fullstack Gallery App with NuxtJs (with Prisma/Postgres DB)
 
 This app implement a **fullstack app with [Nuxt](https://nuxtjs.org//)** using [Vue](https://vuejs.org/) (frontend) and **Prisma Client** with AWS RDS Pstgres DB.
 
