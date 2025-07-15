@@ -14,7 +14,8 @@
     "preview": "nuxt preview",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
-    "copy_prisma_engine": "mv ./generated/prisma/libquery_engine* .output/server/node_modules/@prisma/client/"
+    "copy_prisma_engine": "ls ./generated/prisma/client/libquery_engine*",
+    "copy_prisma_engine1": "mv ./generated/prisma/client/libquery_engine* .output/server/node_modules/@prisma/client/"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.832.0",

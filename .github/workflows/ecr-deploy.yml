@@ -1,4 +1,4 @@
-name: Build & Push Image to Amazon Private ECR , and trigger blue-green deployment
+name: Build & Push Image to Amazon Private ECR
 
 run-name: Run triggered by ${{ github.event_name }} with commit message ${{ github.event.head_commit.message }}
 
@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest 
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
