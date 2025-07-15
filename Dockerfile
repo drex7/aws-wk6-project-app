@@ -15,8 +15,7 @@ ARG DOCKER_ENV
 ENV NODE_ENV=${DOCKER_ENV}
 
 # Build application for production
-RUN --mount=type=secret,id=aws_region,env=AWS_REGION \
-		yarn build
+RUN	yarn build
 
 # Stage 2: Runtime
 FROM node:20-alpine AS runner
