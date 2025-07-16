@@ -7,7 +7,7 @@ WORKDIR /app
 
 
 COPY package.json yarn.lock ./
-RUN yarn cache clean && yarn install
+RUN  yarn install
 
 COPY . .
 ENV PORT=3000
@@ -25,6 +25,8 @@ WORKDIR /app
 # Use modules from builder to avoid reinstall
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.output ./.output
+# COPY --from=builder /app/prisma ./prisma
+# COPY --from=builder /app/generated ./generated
 COPY --from=builder /app/.nuxt ./.nuxt
 COPY --from=builder /app/package.json ./
 

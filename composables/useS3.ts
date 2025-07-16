@@ -1,6 +1,6 @@
 export const useS3 = () => {
 
-  const uploadImageS3 = async (file: File) => {
+  const uploadImageS3 = async (file: File, description: string) => {
     try {
 
 			const respone = await fetch("/api/image", {
@@ -8,18 +8,18 @@ export const useS3 = () => {
 				headers: {
 					"Content-Type": "application/json",
 				},
-        body: JSON.stringify({ filename: file.name }),
+        body: JSON.stringify({ filename: file.name, description }),
       });
 			
 			const { url, key } = await respone.json();
 
-      await fetch(url, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-        },
-      });
+      // await fetch(url, {
+      //   method: "PUT",
+      //   body: file,
+      //   headers: {
+      //     "Content-Type": file.type,
+      //   },
+      // });
 
       return key;
     } catch (error) {

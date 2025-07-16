@@ -1,6 +1,7 @@
 import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3'
 import { getS3Client } from '~/lib/s3Config'
 import { prisma } from "~/lib/db";
+import imagePost from './image.post';
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
@@ -26,8 +27,16 @@ export default defineEventHandler(async (event) => {
       // url: `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${item.Key}`,
     // })) || []; 
 
+    interface Image {
+      id: number;
+      key: string;
+      url: string;
+      // Add other fields as needed from your Prisma schema
+    }
+
+    let images: Image[] = [];
     try {
-      const images = await prisma.image.findMany({
+      images = await prisma.image.findMany({
         skip: (page - 1) * pageSize,
         take: pageSize,
         orderBy: {

@@ -40,15 +40,15 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - AWS_REGION=/run/secrets/aws_region
-      - AWS_ACCESS_KEY_ID=/run/secrets/aws_access_key_id
-      - AWS_SECRET_ACCESS_KEY=/run/secrets/aws_secret_access_key
-      - AWS_S3_BUCKET=/run/secrets/aws_s3_bucket
-    secrets:
-      - aws_region
-      - aws_access_key_id
-      - aws_secret_access_key
-      - aws_s3_bucket
+    #   - AWS_REGION=/run/secrets/aws_region
+    #   - AWS_ACCESS_KEY_ID=/run/secrets/aws_access_key_id
+    #   - AWS_SECRET_ACCESS_KEY=/run/secrets/aws_secret_access_key
+    #   - AWS_S3_BUCKET=/run/secrets/aws_s3_bucket
+    # secrets:
+    #   - aws_region
+    #   - aws_access_key_id
+    #   - aws_secret_access_key
+    #   - aws_s3_bucket
     ports:
       - "3001:3000"
     # develop:
@@ -96,8 +96,8 @@ secrets:
   aws_s3_bucket:
     environment: AWS_S3_BUCKET
   postgres_user:
-    environment: POSTGRES_USER
+    environment: DB_USER
   postgres_password:
-    environment: POSTGRES_PASSWORD
+    environment: DB_PASSWORD
   postgres_db:
-    environment: POSTGRES_DB
+    environment: DB_NAME
