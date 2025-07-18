@@ -1,8 +1,7 @@
 import {
   PutObjectCommand,
-  DeleteObjectCommand, S3ServiceException,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
-import { readFile } from "node:fs/promises";
 import { prisma } from "~/lib/db";
 import { getS3Client } from "~/lib/s3Config";
 
