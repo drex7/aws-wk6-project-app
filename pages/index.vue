@@ -12,17 +12,19 @@
         class="mb-4"
         hidden
       />
-      <div class="text-center my-8  border-2 border-dashed border-gray-300 p-4 rounded w-1/2 mx-auto">
+      <div
+        @click="$refs.fileInput.click()" 
+        class="text-center my-8  border-2 border-dashed border-gray-300 p-4 rounded w-1/2 mx-auto hover:bg-gray-100 cursor-pointer">
         <i class="fas fa-upload text-5xl text-gray-400 mb-4"></i>
-        <h3 class="text-gray-600" @click="$refs.fileInput.click()">Choose file</h3>
+        <h3 class="text-gray-600" >Choose file</h3>
         <!-- Image Preview -->
+      </div>
       <div v-if="imagePreview" class="mb-4">
         <img
           :src="imagePreview"
           alt="Preview"
           class="w-48 h-48 object-cover rounded mx-auto"
         />
-      </div>
       </div>
       
 
@@ -32,11 +34,12 @@
         type="text"
         placeholder="Enter image description"
         class="mb-4 block w-full px-3 py-2 border rounded"
+        required
       />
 
       <button
         @click="uploadImage"
-        :disabled="!selectedFile || loading"
+        :disabled="!selectedFile || loading || !imageDescription"
         class="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 hover:bg-blue-700 focus:outline-none foucs:ring-2 focus:ring-blue-600 focus:ring-opacity-50 w-full"
       >
         {{ loading ? "Uploading..." : "Upload Image" }}
@@ -126,7 +129,7 @@ const handleFileChange = (event) => {
 };
 
 const uploadImage = async () => {
-  if (!selectedFile.value) return;
+  if (!selectedFile.value || !imageDescription.value) return;
 
   loading.value = true;
   try {

@@ -25,7 +25,7 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_S3_BUCKET=${AWS_S3_BUCKET}
 
-  dev-app:
+  dev:
     profiles: [ dev ]
     depends_on: 
       postgres-service:
@@ -53,7 +53,7 @@ services:
     #   - postgres_password
     #   - postgres_db
     ports:
-      - "3001:3000"
+      - "3000:3000"
     # develop:
     #   watch: 
     #     - path: .
