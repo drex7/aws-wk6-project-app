@@ -16,7 +16,7 @@
         @click="$refs.fileInput.click()" 
         class="text-center my-8  border-2 border-dashed border-gray-300 p-4 rounded w-1/2 mx-auto hover:bg-gray-100 cursor-pointer">
         <i class="fas fa-upload text-5xl text-gray-400 mb-4"></i>
-        <h3 class="text-gray-600" >Choose file</h3>
+        <h3 class="text-gray-900" >Choose file</h3>
         <!-- Image Preview -->
       </div>
       <div v-if="imagePreview" class="mb-4">
@@ -26,7 +26,6 @@
           class="w-48 h-48 object-cover rounded mx-auto"
         />
       </div>
-      
 
       <!-- Image Description Input -->
       <input
@@ -110,7 +109,7 @@ const pageSize = ref(12);
 const loading = ref(false);
 const isLoadingImages = ref(true);
 const imagePreview = ref(null);
-const imageDescription = ref(""); // New: description input
+const imageDescription = ref("");
 
 const handleFileChange = (event) => {
   if (event.target.files.length === 0) {
