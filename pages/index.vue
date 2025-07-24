@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-4">Image Gallery v2</h1>
+    <h1 class="text-3xl font-bold mb-4">Image Gallery v2 Derrick demo</h1>
 
     <!-- Upload Section -->
     <div class="my-8 border-2 border-dashed border-gray-300 p-4 rounded w-1/2 mx-auto">
